@@ -69,6 +69,7 @@ export default function HomePage() {
 	const [fakeResult, setFakeResult] = useState<string | null>(null);
 	const [showTip, setShowTip] = useState(true);
 	const [showWalkthrough, setShowWalkthrough] = useState(true);
+	const [isMobile, setIsMobile] = useState(false);
 
 	const walkthroughSteps = [
 		{
@@ -97,6 +98,16 @@ export default function HomePage() {
 		},
 	];
 	const [walkIdx, setWalkIdx] = useState(0);
+
+	useEffect(() => {
+		// Only run on client
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 600);
+		};
+		handleResize();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	// Add a new option
 	const addOption = () => {
@@ -264,12 +275,12 @@ export default function HomePage() {
 				style={{
 					position: "relative",
 					textAlign: "center",
-					padding: typeof window !== "undefined" && window.innerWidth < 600 ? "1.2rem 0.5rem" : "2.5rem 2rem",
+					padding: isMobile ? "1.2rem 0.5rem" : "2.5rem 2rem",
 					background: darkMode ? "#23272f" : "#fff",
 					borderRadius: "32px",
 					boxShadow: "0 8px 32px rgba(20, 184, 166, 0.15)",
 					maxWidth: "480px",
-					width: typeof window !== "undefined" && window.innerWidth < 600 ? "98vw" : "100%",
+					width: isMobile ? "98vw" : "100%",
 					transition: "background 0.3s",
 					border: darkMode ? "1px solid #14b8a6" : "none",
 					zIndex: 1,
@@ -602,8 +613,8 @@ export default function HomePage() {
 				<div
 					style={{
 						position: "fixed",
-						bottom: 24,
-						left: 24,
+						bottom: isMobile ? 80 : 24,
+						left: isMobile ? "50%" : 24,
 						right: "auto",
 						background: darkMode ? "#23272f" : "#e0f7fa",
 						color: darkMode ? "#7feee2" : "#14b8a6",
@@ -615,15 +626,13 @@ export default function HomePage() {
 						opacity: showTip ? 0.95 : 0,
 						transition: "opacity 0.7s",
 						zIndex: 50,
-						maxWidth: "90vw",
-						width: "320px",
+						maxWidth: isMobile ? "95vw" : "90vw",
+						width: isMobile ? "90vw" : "320px",
 						display: "flex",
 						alignItems: "center",
 						gap: "0.7rem",
 						boxSizing: "border-box",
-						...(window.innerWidth < 600
-							? { left: "50%", bottom: 80, transform: "translateX(-50%)", width: "90vw", maxWidth: "95vw" }
-							: {}),
+						transform: isMobile ? "translateX(-50%)" : undefined,
 					}}
 				>
 					<span style={{ fontSize: "1.5rem" }}>💡</span>
@@ -637,16 +646,16 @@ export default function HomePage() {
 					style={{
 						position: "fixed",
 						bottom: 24,
-						right: 24,
+						right: isMobile ? "50%" : 24,
 						left: "auto",
 						zIndex: 50,
 						display: "flex",
 						alignItems: "center",
 						boxSizing: "border-box",
-						// Responsive: move to top if screen is small
-						...(window.innerWidth < 600
-							? { right: "50%", bottom: 24, transform: "translateX(50%)", width: "90vw", maxWidth: "95vw", justifyContent: "flex-end" }
-							: {}),
+						width: isMobile ? "90vw" : undefined,
+						maxWidth: isMobile ? "95vw" : undefined,
+						justifyContent: isMobile ? "flex-end" : undefined,
+						transform: isMobile ? "translateX(50%)" : undefined,
 					}}
 				>
 					<button
